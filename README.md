@@ -17,17 +17,13 @@ Windows is supported for OBS window capture. The screencast fallback also works 
 ## Install
 
 ```powershell
-copilot plugin install fizamusthafa/demo-recorder
-```
-
-Or add it as a marketplace so colleagues can browse and update it:
-
-```powershell
 copilot plugin marketplace add fizamusthafa/demo-recorder
 copilot plugin install demo-recorder@demo-recorder
 ```
 
-Restart Copilot afterwards. Check with `copilot plugin list`.
+Restart Copilot afterwards. Check with `copilot plugin list`. Get later versions with `copilot plugin update demo-recorder@demo-recorder`.
+
+`copilot plugin install fizamusthafa/demo-recorder` also works, but Copilot marks direct repo installs as deprecated.
 
 ## One-time setup
 
@@ -38,7 +34,7 @@ Restart Copilot afterwards. Check with `copilot plugin list`.
    ```
 3. **Script dependencies**. Copilot runs these the first time, or you can:
    ```powershell
-   $skill = "$env:USERPROFILE\.copilot\installed-plugins\_direct\fizamusthafa--demo-recorder\skills\record-authenticated-demo"
+   $skill = (Get-ChildItem "$env:USERPROFILE\.copilot\installed-plugins" -Recurse -Directory -Filter record-authenticated-demo | Select-Object -First 1).FullName
    Push-Location "$skill\scripts"; npm install; Pop-Location
    python -m pip install -r "$skill\scripts\requirements.txt"
    ```
@@ -63,7 +59,7 @@ Raw videos land in `recordings/`; timeline marks in `.demo-recorder/timeline.jso
 ## Update or remove
 
 ```powershell
-copilot plugin update demo-recorder
+copilot plugin update demo-recorder@demo-recorder
 copilot plugin uninstall demo-recorder
 ```
 
