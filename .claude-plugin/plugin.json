@@ -1,0 +1,9 @@
+{
+  "name": "demo-recorder",
+  "description": "Record real Microsoft 365 / SaaS demos in a signed-in external Edge window with Playwright over CDP and OBS.",
+  "version": "1.0.0",
+  "author": { "name": "Fiza Musthafa" },
+  "license": "MIT",
+  "skills": "skills/",
+  "mcpServers": ".mcp.json"
+}

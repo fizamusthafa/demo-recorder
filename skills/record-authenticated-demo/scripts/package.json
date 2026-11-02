@@ -1,0 +1,8 @@
+{
+  "name": "demo-recorder-scripts",
+  "private": true,
+  "description": "Helpers for the record-authenticated-demo skill",
+  "dependencies": {
+    "playwright-core": "^1.48.0"
+  }
+}

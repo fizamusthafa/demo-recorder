@@ -1,0 +1,15 @@
+{
+  "name": "demo-recorder",
+  "description": "Record real Microsoft 365 / SaaS demos in a signed-in external Edge window: drive it with Playwright over CDP, capture it with OBS (or an exact-tab screencast), keep a timeline for editing, and restore OBS afterwards.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Fiza Musthafa",
+    "url": "https://github.com/fizamusthafa"
+  },
+  "homepage": "https://github.com/fizamusthafa/demo-recorder",
+  "repository": "https://github.com/fizamusthafa/demo-recorder",
+  "license": "MIT",
+  "keywords": ["obs", "playwright", "cdp", "edge", "screen-recording", "demo", "microsoft-365", "copilot"],
+  "skills": "skills/",
+  "mcpServers": ".mcp.json"
+}

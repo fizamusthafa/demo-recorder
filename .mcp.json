@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "demo-browser": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@0.0.83", "--cdp-endpoint", "http://127.0.0.1:9333"]
+    },
+    "obs": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "obs-mcp@1.1.0"],
+      "env": {
+        "OBS_WEBSOCKET_URL": "ws://127.0.0.1:4455"
+      }
+    }
+  }
+}
