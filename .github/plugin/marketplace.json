@@ -5,13 +5,13 @@
   },
   "metadata": {
     "description": "Tools for recording authentic product demos in a signed-in browser",
-    "version": "1.0.0"
+    "version": "1.1.0"
   },
   "plugins": [
     {
       "name": "demo-recorder",
       "description": "Drive a signed-in external Edge window with Playwright over CDP and record it with OBS or an exact-tab screencast.",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "source": "./"
     }
   ]

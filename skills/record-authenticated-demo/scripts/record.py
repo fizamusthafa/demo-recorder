@@ -93,7 +93,15 @@ def start():
     if not target or target not in [i["itemValue"] for i in items]:
         raise SystemExit("No captured window. Run: python record.py window <unique title>")
     request("StartRecord")
+    log_take("take-start")
     print("Recording")
+
+
+def log_take(phase, **fields):
+    from datetime import datetime, timezone
+    entry = {"phase": phase, "utc": datetime.now(timezone.utc).isoformat(), **fields}
+    with open(HOME / "timeline.jsonl", "a", encoding="utf-8") as timeline:
+        timeline.write(json.dumps(entry) + "\n")
 
 
 def shot(name):
@@ -107,7 +115,9 @@ def stop(name):
     source = Path(request("StopRecord")["outputPath"])
     target = source.with_name(name + source.suffix)
     if target.exists():
+        log_take("take-stop", label=name, file=str(source))
         raise SystemExit(f"{target} already exists; the recording stays at {source}")
+    log_take("take-stop", label=name, file=str(target))
     for attempt in range(15):
         try:
             source.rename(target)

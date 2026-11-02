@@ -26,11 +26,14 @@ async function main() {
   let cdp;
   try {
     let page;
-    for (const candidate of browser.contexts()[0].pages()) {
-      const s = await candidate.context().newCDPSession(candidate);
-      const info = await s.send('Target.getTargetInfo');
-      await s.detach();
-      if (info.targetInfo.targetId === state.targetId) page = candidate;
+    for (let attempt = 0; attempt < 20 && !page; attempt++) {
+      for (const candidate of browser.contexts().flatMap((c) => c.pages())) {
+        const s = await candidate.context().newCDPSession(candidate);
+        const info = await s.send('Target.getTargetInfo');
+        await s.detach();
+        if (info.targetInfo.targetId === state.targetId) page = candidate;
+      }
+      if (!page) await new Promise((resolve) => setTimeout(resolve, 250));
     }
     if (!page) throw Error('Dedicated window not found. Run: node browser.cjs init');
     await page.bringToFront();

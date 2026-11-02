@@ -1,6 +1,6 @@
 ---
 name: record-authenticated-demo
-description: "Record a real product demo (Microsoft 365, Copilot in Word/Excel/PowerPoint, Teams, SharePoint, any SaaS) in a signed-in external Edge window driven by Playwright over CDP and captured with OBS or an exact-tab screencast. Use when asked to record, film, screen-capture or automate a demo in an authenticated browser, use OBS, use an external/real browser instead of a test browser, or produce raw footage for a demo video."
+description: "Record a real product demo (Microsoft 365, Copilot in Word/Excel/PowerPoint, Teams, SharePoint, any SaaS) in a signed-in external Edge window driven by Playwright over CDP and captured with OBS or an exact-tab screencast, then produce a cut list and rough cut. Use when asked to record, film, screen-capture or automate a demo in an authenticated browser, use OBS, use an external/real browser instead of a test browser, produce raw footage for a demo video, or get editing advice, a cut list or a rough cut for such a recording."
 ---
 
 # Record an authenticated demo
@@ -12,7 +12,7 @@ All helper scripts are in this skill's `scripts/` folder. Runtime state (window 
 ## Workflow
 
 ```
-preflight → browser → OBS setup → framing check → rehearse → record (per take) → verify → restore
+preflight → browser → OBS setup → framing check → rehearse → record (per take) → verify → restore → rough cut
 ```
 
 ### 0. Preflight (once per machine)
@@ -65,6 +65,7 @@ python <skill>/scripts/record.py stop powerpoint-import
 Action scripts receive `page`, `browser` and `ctx` (`ctx.hold(ms)`, `ctx.click(locator)`, `ctx.frame(match)`, `ctx.copilotPane()`, `ctx.root`). Write them like a human uses the app:
 
 - Type prompts with `pressSequentially(text, { delay: 70-100 })`; short, natural prompts.
+- Pass `-Mark` with a readable step name (`open add menu`, `wait for answer`, `hold result`). Steps named `hold`, `read`, `show` or `pause` are kept at full length in the rough cut.
 - Hold 4-8 s on anything the viewer must read (menus, skill text, results). Editing removes waits later; it cannot add missing reading time.
 - Prefer `ctx.click(locator)` (DOM click) when the browser is on a second monitor; pointer clicks can land in the wrong place.
 - One outcome per take. Stop the take and re-record rather than recording troubleshooting.
@@ -85,7 +86,13 @@ Use `ctx.mark('label')` in the script; marks are saved to `<name>.marks.json`. P
 - Save the produced artefacts (files, workbooks, decks) if the demo creates them, and verify them independently.
 - **Always** run `python <skill>/scripts/record.py restore` when finished, even after a failure. Stop the controller and run `browser.cjs close`.
 
-`.demo-recorder/timeline.jsonl` has before/after OBS timecodes for every action. Use it to choose edit points (for example with a demo-video editing skill).
+### 6. Cut list and rough cut
+
+```powershell
+python <skill>/scripts/cut-list.py --rough-cut      # or --marks recordings/<name>.marks.json for capture-tab takes
+```
+
+`.demo-recorder/timeline.jsonl` has take boundaries and OBS timecodes for every action. `cut-list.py` turns it into `<take>.cuts.md` (cut idle time, speed up long waits, keep `hold`/`read`/`show` steps) and renders `<video>.rough.mp4` with ffmpeg. Show the user the cut list and the rough cut's length. For anything beyond a rough cut (structure, what to keep on screen, overlays, privacy pass, ffmpeg recipes, QA), follow [references/editing.md](references/editing.md).
 
 ## Rules
 

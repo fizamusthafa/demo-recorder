@@ -38,7 +38,7 @@ Restart Copilot afterwards. Check with `copilot plugin list`. Get later versions
    Push-Location "$skill\scripts"; npm install; Pop-Location
    python -m pip install -r "$skill\scripts\requirements.txt"
    ```
-4. Optional: **ffmpeg** on PATH for the tab-screencast fallback.
+4. Optional: **ffmpeg** on PATH for the tab-screencast fallback and rough cuts.
 
 ## Use it
 
@@ -49,6 +49,16 @@ Ask Copilot, for example:
 Copilot will start Edge with a dedicated profile, ask you to sign in the first time, set up OBS, show you a framing check, then record take by take. When it finishes it restores your OBS settings.
 
 Raw videos land in `recordings/`; timeline marks in `.demo-recorder/timeline.jsonl`.
+
+## Editing
+
+Ask Copilot for a rough cut, or run it yourself:
+
+```powershell
+python "$skill\scripts\cut-list.py" --rough-cut
+```
+
+It writes a cut list per take (cut idle time, speed up long waits, keep reading time) and renders `<take>.rough.mp4` with ffmpeg. [The editing guide](skills/record-authenticated-demo/references/editing.md) covers clip structure, what to keep on screen, overlays, a privacy pass and tested ffmpeg recipes (trim, speed-up, blur, GIF, contact sheet).
 
 ## Safety
 
