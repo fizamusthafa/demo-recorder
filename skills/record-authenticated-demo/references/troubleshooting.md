@@ -7,6 +7,7 @@ Each fix here came from a real recording session.
 | Symptom | Cause | Fix |
 |---|---|---|
 | `browser.cjs` cannot connect | Edge was started without the debugging port, or another Edge already uses the profile | Close all windows of the demo profile and run `start-browser.ps1` again |
+| "Could not attach to Edge" on the first run of a new profile | On a managed PC, Edge opens a sync confirmation or sign-in dialog that blocks automation | Close the dialog in the demo window and retry. If Edge signed the profile into your work account, sign that profile into the demo tenant instead |
 | "Dedicated demo window is gone" | The window was closed | `node browser.cjs init <url>` |
 | Office app renders wider than the window; side panes are cut off in OBS | Leftover viewport/device-metrics emulation from an earlier automation session | `node browser.cjs fix-size`, then reload the page |
 | Clicks land in the wrong place | Window is on a monitor with different scaling | Use `ctx.click(locator)` (DOM click) or move the window to the primary monitor |

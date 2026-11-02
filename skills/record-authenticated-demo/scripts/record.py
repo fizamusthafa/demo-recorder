@@ -79,7 +79,21 @@ def window(match):
     request("SetInputSettings", {"inputName": SOURCE, "inputSettings": {"window": found[0]["itemValue"]}, "overlay": True})
     time.sleep(1)
     fit_source()
+    state = json.loads(STATE.read_text(encoding="utf-8"))
+    state["window"] = found[0]["itemValue"]
+    STATE.write_text(json.dumps(state, indent=2), encoding="utf-8")
     print(f"Capturing: {found[0]['itemName']}")
+
+
+def start():
+    if not STATE.exists():
+        raise SystemExit("Run: python record.py setup")
+    target = json.loads(STATE.read_text(encoding="utf-8")).get("window")
+    items = request("GetInputPropertiesListPropertyItems", {"inputName": SOURCE, "propertyName": "window"})["propertyItems"]
+    if not target or target not in [i["itemValue"] for i in items]:
+        raise SystemExit("No captured window. Run: python record.py window <unique title>")
+    request("StartRecord")
+    print("Recording")
 
 
 def shot(name):
@@ -116,11 +130,12 @@ def restore():
     request("SetRecordDirectory", {"recordDirectory": state["directory"]})
     for name, muted in state["mutes"].items():
         request("SetInputMute", {"inputName": name, "inputMuted": muted})
-    STATE.rename(STATE.with_name("obs-state.restored.json"))
+    STATE.replace(STATE.with_name("obs-state.restored.json"))
     print("OBS settings restored. The demo scene and source were kept for next time.")
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # Edge window titles contain zero-width spaces
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("action", choices=["setup", "window", "shot", "start", "stop", "status", "restore"])
     parser.add_argument("value", nargs="?")
@@ -136,8 +151,7 @@ def main():
     elif a.action == "shot":
         shot(a.value)
     elif a.action == "start":
-        request("StartRecord")
-        print("Recording")
+        start()
     elif a.action == "stop":
         stop(a.value)
     elif a.action == "status":

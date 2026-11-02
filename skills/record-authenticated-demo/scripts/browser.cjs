@@ -28,13 +28,25 @@ async function dedicatedPage(browser, create) {
     state = { targetId, windowId };
     fs.writeFileSync(stateFile, JSON.stringify(state, null, 2));
   }
-  for (const page of browser.contexts()[0].pages()) {
-    const session = await page.context().newCDPSession(page);
-    const info = await session.send('Target.getTargetInfo');
-    await session.detach();
-    if (info.targetInfo.targetId === state.targetId) return { page, cdp, state };
+  // A freshly created target reaches Playwright's page list asynchronously.
+  for (let attempt = 0; attempt < 40; attempt++) {
+    for (const page of browser.contexts().flatMap((c) => c.pages())) {
+      const session = await page.context().newCDPSession(page);
+      const info = await session.send('Target.getTargetInfo');
+      await session.detach();
+      if (info.targetInfo.targetId === state.targetId) return { page, cdp, state };
+    }
+    await new Promise((resolve) => setTimeout(resolve, 250));
   }
   throw Error('The dedicated demo window is gone. Run: node browser.cjs init');
+}
+
+async function connect() {
+  try {
+    return await chromium.connectOverCDP(`http://127.0.0.1:${port}`, { timeout: 20000 });
+  } catch (error) {
+    throw Error(`Could not attach to Edge on 127.0.0.1:${port}. If Edge shows a dialog (sync, sign-in, restore pages), close it and retry. ${error.message.split('\n')[0]}`);
+  }
 }
 
 async function fixSize(page, cdp, state) {
@@ -64,7 +76,7 @@ async function runScript(code, page, browser) {
 
 async function main() {
   const [command, ...args] = process.argv.slice(2);
-  const browser = await chromium.connectOverCDP(`http://127.0.0.1:${port}`);
+  const browser = await connect();
   try {
     const { page, cdp, state } = await dedicatedPage(browser, command === 'init');
     page.setDefaultTimeout(30000);
